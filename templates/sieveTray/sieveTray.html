@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h3  class="form-label">complete the basic information</h3>
+
+<br>
+
+<form action="/Home/sieveTray/" method="POST" class="give_data_form">
+  {% csrf_token %}
+  <table class="table" style="width:50%">
+    <thead class="table-dark">
+<!--    ستون سیاه اصلی-->
+      <tr>
+        <th scope="col" >Title</th>
+        <th scope="col" >Amounts</th>
+      </tr>
+<!--    بدنه-->
+    </thead>
+    <tbody>
+
+
+      <tr>
+        <th scope="row" >Vapor Flow Rate(Kmol/s):</th>
+        <td>{{form.FlowRateVapor}}</td>
+      </tr>
+            <tr>
+        <th scope="row" >Liquid Flow Rate (Kmol/s):</th>
+        <td>{{form.FlowRateLiquid}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Temperature (C):</th>
+        <td>{{form.Temperature}}</td>
+
+      </tr>
+      <tr>
+        <th scope="row" >Pressure (atm):</th>
+        <td>{{form.Pressure}}</td>
+
+      </tr>
+      <tr>
+        <th scope="row" >mole fraction in vapor:</th>
+        <td>{{form.Mfv}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >mass fraction in liquid:</th>
+        <td>{{form.Mfl}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >viscosity of gas:</th>
+        <td>{{form.viscosity}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >Molecular weight first substance:</th>
+        <td>{{form.MolWt_1}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >Molecular weight second substance:</th>
+        <td>{{form.MolWt_2}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >liquid density:</th>
+        <td>{{form.liquid_density}}</td>
+
+      </tr>
+          <tr>
+        <th scope="row" >Surface tension:</th>
+        <td>{{form.surface_tension}}</td>
+
+      </tr>
+
+    </tbody>
+  </table>
+    <input type="submit"  class="btn btn-success" value="next">
+</form>
+
+
+
+{% endblock %}

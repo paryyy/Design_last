@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!--خوش آمدگویی-->
+<h1 class="display-4">Design Tower</h1> <br> <br>
+
+
+<!--انتخاب متد و نوع برج-->
+
+<form class="row g-3" action="\Home\"   method="POST">
+  {% csrf_token %}
+  <div class="col-md-4">
+    <label for="inputState" class="form-label">select your method</label>
+    <select id="inputState" class="form-select"  name="method">
+      <option selected>Choose...</option>
+      <option>trybal</option>
+    </select>
+      <br> <br>
+  </div>
+    <label for="inputState" class="form-label">Select the type of tower</label>
+    <select id="inputState" class="form-select" name="types_tower">
+      <option selected>Choose...</option>
+      <option>sieve tray</option>
+        <option>packed tray</option>
+    </select>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-success">send</button>
+  </div>
+</form>
+{% endblock %}
