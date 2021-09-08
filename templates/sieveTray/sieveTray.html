@@ -1,16 +1,92 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!--     نمایش نتیجه -->
+                 <div>
+                <div class="alert alert-success" role="alert">
+                    result: <br><br><br><br><br><br>
+                </div>
+            </div>
 <br>
-<h3  class="form-label">complete the basic information</h3>
+<h3  class="form-label">complete information</h3>
 
-<br>
 
-<form action="/Home/sieveTray/" method="POST" class="give_data_form">
+
+ <div >
+
+<!--     هشدار ها -->
+          {% if Do > 10 %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    This is a danger alert with Do = {{Do}}.
+                </div>
+            </div>
+          {% endif %}
+          {% if material_design  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    warning: for your material Design {{material_design}}.
+                </div>
+            </div>
+          {% endif %}
+
+
+
+          {% if calc_h_delta_p  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{ calc_h_delta_p }}.
+                </div>
+            </div>
+          {% endif %}
+
+          {% if check_tray_spacing  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{ check_tray_spacing }}.
+                </div>
+            </div>
+          {% endif %}
+          {% if check_tray_spacing  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{ check_tray_spacing }}.
+                </div>
+            </div>
+          {% endif %}
+          {% if Euser == 0.075  %}
+            <div>
+                <div class="alert alert-primary" role="alert">
+                    We calculated the values needed to design your tower! <br><br> in the last step<br>read the value of E from (MASS-TRANSFER OPERATIONS(Terybal) - Figure 6.1 ) with the <br> horizontal parameter={{Horizontal_parameter}}   and    V / Vf = {{Times_vn_vf}}
+                    <br> then Change E to this table.
+                </div>
+            </div>
+          {% endif %}
+
+
+          {% if Entrainment  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{Entrainment}}
+                </div>
+            </div>
+          {% endif %}
+
+               {% if VoLessVow  %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    warning: {{VoLessVow}}.
+                </div>
+            </div>
+          {% endif %}
+
+<!--     اتمام هشدار ها-->
+<form action="/Home/sieveTray/" method="POST" >
   {% csrf_token %}
-  <table class="table" style="width:50%">
+  <table class="table" style="width:50%"  >
     <thead class="table-dark">
 <!--    ستون سیاه اصلی-->
+
       <tr>
         <th scope="col" >Title</th>
         <th scope="col" >Amounts</th>
@@ -18,8 +94,7 @@
 <!--    بدنه-->
     </thead>
     <tbody>
-
-
+        <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
       <tr>
         <th scope="row" >Vapor Flow Rate(Kmol/s):</th>
         <td>{{form.FlowRateVapor}}</td>
@@ -29,12 +104,12 @@
         <td>{{form.FlowRateLiquid}}</td>
       </tr>
       <tr>
-        <th scope="row" >Temperature (C):</th>
+        <th scope="row" >Temperature [C]:</th>
         <td>{{form.Temperature}}</td>
 
       </tr>
       <tr>
-        <th scope="row" >Pressure (atm):</th>
+        <th scope="row" >Pressure [atm]:</th>
         <td>{{form.Pressure}}</td>
 
       </tr>
@@ -49,35 +124,89 @@
 
       </tr>
           <tr>
-        <th scope="row" >viscosity of gas:</th>
+        <th scope="row" >viscosity of gas [Kg/m.s]:</th>
         <td>{{form.viscosity}}</td>
 
       </tr>
           <tr>
-        <th scope="row" >Molecular weight first substance:</th>
+        <th scope="row" >Molecular weight first substance [g/mol]:</th>
         <td>{{form.MolWt_1}}</td>
 
       </tr>
           <tr>
-        <th scope="row" >Molecular weight second substance:</th>
+        <th scope="row" >Molecular weight second substance [g/mol]:</th>
         <td>{{form.MolWt_2}}</td>
 
       </tr>
           <tr>
-        <th scope="row" >liquid density:</th>
+        <th scope="row" >liquid density :</th>
         <td>{{form.liquid_density}}</td>
 
       </tr>
           <tr>
-        <th scope="row" >Surface tension:</th>
+        <th scope="row" >Surface tension [N/m]:</th>
         <td>{{form.surface_tension}}</td>
 
+      </tr>
+             <tr><h1 ><th scope="row"  >2:Tower information</th></h1></tr>
+      <br><br>
+      <tr>
+        <th scope="row" >TowerDiameter [m]:</th>
+        <td>{{form.TowerDiameter}}</td>
+      </tr>
+          <tr>
+        <th scope="row" >tray spacing [m]:</th>
+        <td>{{form.tray_spacing}}</td>
+      </tr>
+          <tr>
+        <th scope="row" >W/T: (0.6, 0.65, 0.7, 0.75, 0.8):</th>
+        <td>{{form.times_w_t}}</td>
+      </tr>
+                      <tr>
+        <th scope="row" >material design:</th>
+        <td >
+            {{form.material_design}}
+        </td>
+      </tr>
+          <tr>
+        <th scope="row" >Hole Diameter [mm]:</th>
+        <td>{{form.Do}}</td>
+      </tr>
+          <tr>
+        <th scope="row" >ratio of perforations to Hole Diameter(P'/Do):</th>
+        <td>{{form.Times_dis_hol}}</td>
+      </tr>
+          <tr>
+        <th scope="row" >ratio of velocity than the flooding speed(Vn/Vf):</th>
+        <td>{{form.Times_vn_vf}}</td>
+      </tr>
+
+          </tr>
+              <tr>
+        <th scope="row" >hw [mm]:</th>
+        <td>{{form.hw}}</td>
+      </tr>
+              <tr>
+        <th scope="row" >E (enter 0.075 first time):</th>
+        <td>{{form.Euser}}</td>
       </tr>
 
     </tbody>
   </table>
-    <input type="submit"  class="btn btn-success" value="next">
+
+    <input type="submit"  class="btn btn-success" value="check"  >
 </form>
+
+</div>
+
+
+
+
+
+
+
+
+
 
 
 

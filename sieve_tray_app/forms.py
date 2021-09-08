@@ -16,13 +16,14 @@ class give_data_form(forms.Form):
     TowerDiameter = forms.DecimalField(label="TowerDiameter [m] (1 [m] is good for first Choice)")
     tray_spacing = forms.DecimalField(label="tray spacing [m] (0.5 [m] is good for first Choice)")
     times_w_t = forms.DecimalField(label="How many times your Weir length than the diameter")
-    Do = forms.DecimalField(label="Hole Diameter [mm] (4.5 [mm] is good for first Choice or 9[mm] for stainless steel)")
-    OPTIONS = (
-        ("a", "Stainless steel"),
-        ("b", "Carbon steel"),
+    MATERIAL_CHOICES = (
+        ('Stainless steel', 'Stainless steel'),
+        ('Carbon steel', 'Carbon steel')
     )
-    material_design = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple,
-                                                choices=OPTIONS)
-
-
-
+    material_design = forms.ChoiceField(choices=MATERIAL_CHOICES, widget=forms.RadioSelect)
+    Do = forms.DecimalField(label="Hole Diameter [mm] (4.5 [mm] is good for first Choice or 9[mm] for stainless "
+                                  "steel)")
+    Times_dis_hol = forms.DecimalField(label="Times_dis_hol")
+    Times_vn_vf = forms.DecimalField(label="Times_vn_vf")
+    hw = forms.DecimalField(label="hw")
+    Euser = forms.DecimalField(label="Euser")
