@@ -58,6 +58,7 @@ def sieveTray_view(request, ):
             Gas_density = round(Pressure * MolAvg_gas / (R * (Temperature + 273)) * 100, 3)  # kg/m^3
             Volumetric_flow_rate_G = round(FlowRateVapor * MolAvg_gas / Gas_density, 3)  # m^3/s
             context = {'resultt': FlowRateVapor, 'form': form}
+            context['tray_spacing'] = tray_spacing
             # check material and Do
             material_design = form.cleaned_data['material_design']
             if material_design == 'Stainless steel':
@@ -146,7 +147,6 @@ def sieveTray_view(request, ):
                 #  Give from user Weir length relative to diameter 0.6 0.65 0.7 0.75 0.8
                 # is common for first Choice 0.7(Tower Diameter)
                 # time_w_t = 0.7  # float(input('How many times your Weir length than the diameter ? (it is better to be 0.7 times'))
-
                 #  table   6.1 (4)
                 #  نسبت طول بند به قطر برج  و ارتباطش با درصد سطح اشغال شده توسط ناودان اینجا به دادن جواب نسبت بسنده کردم
                 division_ad_to_at_in_w_to_t_dic = {0.6: 5.257, 0.65: 6.899, 0.7: 8.808, 0.75: 11.255, 0.8: 14.145}
@@ -235,7 +235,8 @@ def sieveTray_view(request, ):
                 An = _calc_under_pressure_()[5]
                 # print('An= ', An)
                 # print('Td_under_pressure= ', Td_under_pressure)
-
+            context['W'] = W
+            context['Td'] = Td
                 # {{ مسئله هیدرودینامیک }}
 
             def _h1_():
@@ -255,6 +256,7 @@ def sieveTray_view(request, ):
 
             # ارتفاع بند: weir height
             hw = float(form.cleaned_data['hw'])
+            context['hw'] = hw
             # print(hw)
             # افت فشار روی سینی ها
 
@@ -323,7 +325,8 @@ def sieveTray_view(request, ):
                 context['calc_h_delta_p'] = 'Warning: The pressure drop on each tray in the tray towers is up to 800 Pascals! It is better to increase the diameter.'
             if Pressure > 3 and _calc_h_delta_p_()[0] > 1000:
                 context['calc_h_delta_p'] ='Warinig: The pressure drop in the tower is under a pressure of 1000 Pascals! it is better to increase the diameter.'
-
+            delta_p = round(_calc_h_delta_p_()[0],3)
+            context['delta_p'] = delta_p
             # hG
             hG = _calc_h_delta_p_()[1]  # [m]
             Vo = _calc_h_delta_p_()[2]
@@ -343,11 +346,16 @@ def sieveTray_view(request, ):
             h3 = round(hG + h2, 3)  # [m]
 
 
-            def _check_tray_spacing_():
-                if h3 + (hw * 10**-3) + h1 > tray_spacing / 2:
-                    context['check_tray_spacing'] = 'Warning: tray spacing is small. arise it!'
-                    # show the range that he can select tray spacing
-            _check_tray_spacing_()
+            # def _check_tray_spacing_():
+            liquidDepth_DownComer =round( h3 + (hw * 10**-3) + h1, 4)
+            if liquidDepth_DownComer > tray_spacing / 2:
+                context['check_tray_spacing'] = 'Warning: tray spacing is small or (liquid depth in Down Comer is up). arise it!'
+                context['liquidDepth_DownComer'] =liquidDepth_DownComer
+                # show the range that he can select tray spacing
+            else:
+                context['liquidDepth_DownComer'] = liquidDepth_DownComer
+
+
 
             # حد پایین سرعت گاز قابل قبول برای weeping
             # calc Vow as x
@@ -376,6 +384,7 @@ def sieveTray_view(request, ):
                 context['Entrainment'] = 'Warning: Entrainment is remarkable!'
 
             # و بالاخره نمایش نتایج
+            context['Do'] = Do
 
 
             return render(request, 'sieveTray/sieveTray.html', context)
