@@ -4,14 +4,10 @@ from django import forms
 class give_data_form(forms.Form):
     FlowRateVapor = forms.DecimalField(label="Vapor Flow Rate(Kmol/s)")
     FlowRateLiquid = forms.DecimalField(label="Liquid Flow Rate (Kmol/s)")
-    Temperature = forms.DecimalField(label="Temperature (C)")
     Pressure = forms.DecimalField(label="Pressure (atm)")
-    Mfv = forms.DecimalField(label="mole fraction in vapor")
-    Mfl = forms.DecimalField(label="mass fraction in liquid")
     viscosity = forms.DecimalField(label="viscosity of gas")
-    MolWt_1 = forms.DecimalField(label="Molecular weight first substance")
-    MolWt_2 = forms.DecimalField(label="Molecular weight second substance")
     liquid_density = forms.DecimalField(label="liquid density")
+    Gas_density = forms.DecimalField(label="Gas_density")
     surface_tension = forms.DecimalField(label="Surface tension")
     TowerDiameter = forms.DecimalField(label="TowerDiameter [m] (1 [m] is good for first Choice)")
     tray_spacing = forms.DecimalField(label="tray spacing [m] (0.5 [m] is good for first Choice)")
@@ -26,4 +22,23 @@ class give_data_form(forms.Form):
     Times_dis_hol = forms.DecimalField(label="Times_dis_hol")
     Times_vn_vf = forms.DecimalField(label="Times_vn_vf")
     hw = forms.DecimalField(label="hw")
-    Euser = forms.DecimalField(label="Euser")
+
+
+
+
+class give_data_packed_form(forms.Form):
+    percent_first_sub_gas = forms.DecimalField(label="percent_first_sub_gas")
+    Mw_first_sub_gas = forms.DecimalField(label="Mw_first_sub_gas")
+    Mw_gas = forms.DecimalField(label="Mw_gas")
+    Packing_CHOICES = (
+        ('ceramic_Intalox_saddles', '25[mm] ceramic Intalox saddles'),
+    )
+    type_packing = forms.ChoiceField(choices=Packing_CHOICES, widget=forms.RadioSelect)
+    rate_gas_entering = forms.DecimalField(label="rate_gas_entering")
+    Temp_gas_entering = forms.DecimalField(label="Temp_gas_entering")
+    Pressure_gas_entering = forms.DecimalField(label="Pressure_gas_entering")
+    rate_sub_in_liq = forms.DecimalField(label="rate_sub_in_liq")
+    density_sub_in_liq = forms.DecimalField(label="density_sub_in_liq")
+    viscosity_sub_in_liq = forms.DecimalField(label="viscosity_sub_in_liq")
+
+

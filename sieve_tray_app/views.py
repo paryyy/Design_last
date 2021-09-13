@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import give_data_form
+from .forms import give_data_form, give_data_packed_form
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 import math
@@ -8,7 +8,6 @@ import pandas as pd
 from sympy.abc import x
 from sympy import Eq, solve
 
-
 from django.http import HttpResponse
 
 
@@ -16,16 +15,50 @@ from django.http import HttpResponse
 def Home_page_view(request):
     if request.method == 'POST':
         data = request.POST
-        if data['method'] == 'trybal' and data['types_tower'] == 'sieve tray':
+        if data['method'] == 'Trybal' and data['types_tower'] == 'Sieve Tray':
             return redirect('/Home/sieveTray/')
-        elif data['method'] == 'trybal' and data['types_tower'] == 'packed tray':
+        elif data['method'] == 'Trybal' and data['types_tower'] == 'Packed Tray':
             # return render(request, 'packedTray.html',{data['method']:'trybal', data['types_tower']: 'packed tray' })
             return redirect('/Home/packedtray/')
     return render(request, 'Home.html')
 
 
 def packedTray_view(request):
-    return render(request, 'packedTray/packedTray.html')
+    if request.method == "POST":
+        form = give_data_packed_form(request.POST)
+        if form.is_valid():
+            # گرفتن مقدار ماده اول موجود در هوا به درصد
+            percent_first_sub_gas = float(form.cleaned_data['percent_first_sub_gas'])  # 7%
+            Mw_first_sub_gas = float(form.cleaned_data['Mw_first_sub_gas'])  # 64
+            Mw_gas = float(form.cleaned_data['Mw_gas'])  # 29
+            type_packing = form.cleaned_data['type_packing']
+            rate_gas_entering = float(form.cleaned_data['rate_gas_entering'])  # 0.8  [m^3/s]
+            Temp_gas_entering = float(form.cleaned_data['Temp_gas_entering'])  # 30 [C]
+            Pressure_gas_entering = float(form.cleaned_data['Pressure_gas_entering'])  # 0.986 [atm]
+            rate_sub_in_liq = float(form.cleaned_data['rate_sub_in_liq'])  # 3.8 [Kg/s]
+            density_sub_in_liq = float(form.cleaned_data['density_sub_in_liq'])  # 1235 [kg/m^3]
+            viscosity_sub_in_liq = float(form.cleaned_data['viscosity_sub_in_liq'])  # 0.0025 [Kg/m.s]
+            R = 8.314
+            Mw_avg_gas = ((percent_first_sub_gas / 100) * (Mw_first_sub_gas)) + (
+                        (1 - (percent_first_sub_gas / 100)) * (Mw_gas))  # 31.45
+            gas_mol_rate = round(((Pressure_gas_entering * rate_gas_entering) / (R * (Temp_gas_entering + 273)) * 100),
+                                 5)  # 0.0313 [Kmol/s]
+            gas_mass_rate = round(
+                ((Pressure_gas_entering * rate_gas_entering) / (R * (Temp_gas_entering + 273))) * Mw_avg_gas * 101,
+                1)  # 1 [Kg/s]
+            density_gas = round(gas_mass_rate / rate_gas_entering, 3)  # 1.25 [Kg/m^3]
+            liq_mass_rate = round(
+                rate_sub_in_liq + ((gas_mol_rate) * (percent_first_sub_gas / 100) * (Mw_first_sub_gas)),
+                4)  # 3.9403 [Kg/s]
+            Horizontal_parameter_Fig6_34 = round(
+                (liq_mass_rate / gas_mass_rate) * (density_gas / (density_sub_in_liq - density_gas)) ** 0.5, 3)  # 0.125
+            print(Horizontal_parameter_Fig6_34)
+
+            context = {'form': form}
+            return render(request, 'packedTray/packedTray.html', context)
+    else:
+        form = give_data_packed_form()
+        return render(request, 'packedTray/packedTray.html', {'form': form})
 
 
 # Create your views here.
@@ -34,30 +67,20 @@ def sieveTray_view(request, ):
     if request.method == "POST":
         form = give_data_form(request.POST)
         if form.is_valid():
-            FlowRateVapor =float( form.cleaned_data['FlowRateVapor'])
-            FlowRateLiquid = float(form.cleaned_data['FlowRateLiquid'])
-            Temperature = float(form.cleaned_data['Temperature'])
+            Volumetric_flow_rate_G = float(form.cleaned_data['FlowRateVapor'])
+            Volumetric_flow_rate_L = float(form.cleaned_data['FlowRateLiquid'])
+            #  Temperature = float(form.cleaned_data['Temperature'])
             Pressure = float(form.cleaned_data['Pressure'])
-            Mfv = float(form.cleaned_data['Mfv'])
-            Mfl = float(form.cleaned_data['Mfl'])
             viscosity = float(form.cleaned_data['viscosity'])
-            MolWt_1 = float(form.cleaned_data['MolWt_1'])
-            MolWt_2 = float(form.cleaned_data['MolWt_2'])
-            liquid_density =float( form.cleaned_data['liquid_density'])
+            liquid_density = float(form.cleaned_data['liquid_density'])
+            Gas_density = float(form.cleaned_data['Gas_density'])  # kg/m^3
             surface_tension = float(form.cleaned_data['surface_tension'])
             TowerDiameter = float(form.cleaned_data['TowerDiameter'])
             tray_spacing = float(form.cleaned_data['tray_spacing'])
             times_w_t = float(form.cleaned_data['times_w_t'])
-            Euser = float(form.cleaned_data['Euser'])
-            R = 8.314
             g = 9.807  # [m^2/s]
             gc = 1
-            MolAvg_liquid = 100 / ((Mfl / MolWt_1) + ((100 - Mfl) / MolWt_2))
-            MolAvg_gas = Mfv / 100 * MolWt_1 + (100 - Mfv) / 100 * MolWt_2
-            Volumetric_flow_rate_L = round(FlowRateLiquid * MolAvg_liquid / liquid_density, 3)
-            Gas_density = round(Pressure * MolAvg_gas / (R * (Temperature + 273)) * 100, 3)  # kg/m^3
-            Volumetric_flow_rate_G = round(FlowRateVapor * MolAvg_gas / Gas_density, 3)  # m^3/s
-            context = {'resultt': FlowRateVapor, 'form': form}
+            context = {'form': form}
             context['tray_spacing'] = tray_spacing
             # check material and Do
             material_design = form.cleaned_data['material_design']
@@ -66,16 +89,14 @@ def sieveTray_view(request, ):
             elif material_design == 'Carbon steel':
                 material_design_id = 2
             Do = float(form.cleaned_data['Do'])
-            if material_design_id == 1 and Do<4.5:
-                context['material_design'] = 'Hole Diameter should be 4.5 [mm] or more'
-            elif material_design_id == 2 and Do<9:
-                context['material_design'] = 'Hole Diameter  should be 9 [mm] or more'
+
             # به دست آوردن نسبت ضخامت به قطر
             def _ticknessToHoleDiameter_():
-                Do_Stainless_Carbon_list = [[3, 0.65, np.NaN], [4.5, 0.43, np.NAN], [6.0, 0.32, np.NAN],
+                Do_Stainless_Carbon_list = [[3, 0.65, 0.760], [4.5, 0.43, 0.702], [6.0, 0.32,0.64],
                                             [9.0, 0.22, 0.5],
                                             [12.0, 0.16, 0.38], [15.0, 0.17, 0.3], [18.0, 0.11, 0.25]]
-                df_Do_Stainless_Carbon_list = pd.DataFrame(Do_Stainless_Carbon_list,columns='Hole_Diameter 1 2'.split())
+                df_Do_Stainless_Carbon_list = pd.DataFrame(Do_Stainless_Carbon_list,
+                                                           columns='Hole_Diameter 1 2'.split())
                 # دسترسی به شماره ایندکس ها
                 ticknessToHoleDiameter = 0
                 for i in range(7):
@@ -96,8 +117,9 @@ def sieveTray_view(request, ):
             Times_dis_hol = float(form.cleaned_data['Times_dis_hol'])
             Times_vn_vf = float(form.cleaned_data['Times_vn_vf'])
             P_prim = math.ceil(Times_dis_hol * Do)
-            L =  math.ceil(Do * ticknessToHoleDiameter)  # [mm]
+            L = math.ceil(Do * ticknessToHoleDiameter)  # [mm]
             division_L_to_do = ticknessToHoleDiameter
+
             # print('L is= ', L)
             # تابعی برای منطقی و رند کردن شعاع ها
             def _round_diameter(td):
@@ -116,7 +138,7 @@ def sieveTray_view(request, ):
                 #  {{ Calculation CF }}
                 # ابتدا L'/G'(density_g/density_l)^0.5 که نامش را division_for_CF میگذاریم، را  محاسبه میکنیم
                 division_for_cf = ((Volumetric_flow_rate_L * liquid_density) / (
-                            Volumetric_flow_rate_G * Gas_density)) * (
+                        Volumetric_flow_rate_G * Gas_density)) * (
                                           Gas_density / liquid_density) ** 0.5
                 if 0.01 <= division_for_cf <= 0.1:
                     division_for_cf = 0.1
@@ -149,13 +171,33 @@ def sieveTray_view(request, ):
                 # time_w_t = 0.7  # float(input('How many times your Weir length than the diameter ? (it is better to be 0.7 times'))
                 #  table   6.1 (4)
                 #  نسبت طول بند به قطر برج  و ارتباطش با درصد سطح اشغال شده توسط ناودان اینجا به دادن جواب نسبت بسنده کردم
-                division_ad_to_at_in_w_to_t_dic = {0.6: 5.257, 0.65: 6.899, 0.7: 8.808, 0.75: 11.255, 0.8: 14.145}
-                w_to_area_used_by_one_downspout = division_ad_to_at_in_w_to_t_dic[times_w_t]
-                # print('WToAreaUsedByOneDownSpout= ', WToAreaUsedByOneDownSpout)
 
+                def _w_to_area_used_by_one_downspout_():
+                    division_ad_to_at_in_w_to_t_list = [[0.6, 5.257], [0.65, 6.899], [0.7, 8.808], [0.75, 11.255],
+                                                        [0.8, 14.145]]
+                    w_to_area_used_by_one_downspout = 0
+                    for i in range(5):
+                        if division_ad_to_at_in_w_to_t_list[i][0] == times_w_t:
+                            w_to_area_used_by_one_downspout = division_ad_to_at_in_w_to_t_list[i][1]
+                        if division_ad_to_at_in_w_to_t_list[i][0] != times_w_t:
+                            for t in range(5):
+                                if division_ad_to_at_in_w_to_t_list[t][0] < times_w_t < \
+                                        division_ad_to_at_in_w_to_t_list[t + 1][0]:
+                                    x0 = division_ad_to_at_in_w_to_t_list[t][0]
+                                    x1 = division_ad_to_at_in_w_to_t_list[t + 1][0]
+                                    y0 = division_ad_to_at_in_w_to_t_list[t][1]
+                                    y1 = division_ad_to_at_in_w_to_t_list[t + 1][1]
+                                    x = times_w_t
+                                    w_to_area_used_by_one_downspout = round(
+                                        (((y0) * (x1 - x)) + ((y1) * (x - x0))) / (x1 - x0), 3)
+                    return w_to_area_used_by_one_downspout
+
+                w_to_area_used_by_one_downspout = _w_to_area_used_by_one_downspout_()
+
+                # print('WToAreaUsedByOneDownSpout= ', WToAreaUsedByOneDownSpout)
                 # solve At as x
-                # At = An + (division_ad_to_at_in_w_to_t_dic[times_w_t]/100) * At
-                eq_solve_at = Eq(an + (division_ad_to_at_in_w_to_t_dic[times_w_t] / 100) * x, x)
+                #  At = An + (division_ad_to_at_in_w_to_t_dic[times_w_t]/100) * At
+                eq_solve_at = Eq(an + (w_to_area_used_by_one_downspout / 100) * x, x)
                 at = solve(eq_solve_at)  # [m^2]
                 # print('At= ', At)
 
@@ -173,7 +215,6 @@ def sieveTray_view(request, ):
                 while Volumetric_flow_rate_L / td_atm > 0.015:
                     td_atm += 0.05
                 return td_atm
-
 
             WToAreaUsedByOneDownSpout = _atmospheric_diam_tower_()[2]
 
@@ -237,7 +278,8 @@ def sieveTray_view(request, ):
                 # print('Td_under_pressure= ', Td_under_pressure)
             context['W'] = W
             context['Td'] = Td
-                # {{ مسئله هیدرودینامیک }}
+
+            # {{ مسئله هیدرودینامیک }}
 
             def _h1_():
                 # hh1 همون h1 هست
@@ -257,6 +299,7 @@ def sieveTray_view(request, ):
             # ارتفاع بند: weir height
             hw = float(form.cleaned_data['hw'])
             context['hw'] = hw
+
             # print(hw)
             # افت فشار روی سینی ها
 
@@ -300,7 +343,7 @@ def sieveTray_view(request, ):
                 # print(Va)
                 # calc hL as x
                 eq_hl = Eq((6.1 * 10 ** (-3)) + (0.725 * hw * 10 ** -3) - (
-                            0.238 * hw * 10 ** -3 * va * (Gas_density ** 0.5)) + (
+                        0.238 * hw * 10 ** -3 * va * (Gas_density ** 0.5)) + (
                                    1.225 * Volumetric_flow_rate_L / z), x)
                 solve_hl = solve(eq_hl)
                 hl = round(solve_hl[0], 2)  # [m]
@@ -318,14 +361,17 @@ def sieveTray_view(request, ):
                 # print(delta_p)
                 # 6.1 (5)   چک کردن افت فشار روی هر سینی
                 return [delta_p, hg, vo]
+
             # برای نشان دادن افت فشار به مخاطب
 
             # محاسبه افت فشار روی هر سینی
             if 1 <= Pressure <= 3 and _calc_h_delta_p_()[0] > 800:
-                context['calc_h_delta_p'] = 'Warning: The pressure drop on each tray in the tray towers is up to 800 Pascals! It is better to increase the diameter.'
+                context[
+                    'calc_h_delta_p'] = 'Warning: The pressure drop on each tray in the tray towers is up to 800 Pascals! It is better to increase the diameter.'
             if Pressure > 3 and _calc_h_delta_p_()[0] > 1000:
-                context['calc_h_delta_p'] ='Warinig: The pressure drop in the tower is under a pressure of 1000 Pascals! it is better to increase the diameter.'
-            delta_p = round(_calc_h_delta_p_()[0],3)
+                context[
+                    'calc_h_delta_p'] = 'Warinig: The pressure drop in the tower is under a pressure of 1000 Pascals! it is better to increase the diameter.'
+            delta_p = round(_calc_h_delta_p_()[0], 3)
             context['delta_p'] = delta_p
             # hG
             hG = _calc_h_delta_p_()[1]  # [m]
@@ -345,23 +391,21 @@ def sieveTray_view(request, ):
             # calc h3
             h3 = round(hG + h2, 3)  # [m]
 
-
             # def _check_tray_spacing_():
-            liquidDepth_DownComer =round( h3 + (hw * 10**-3) + h1, 4)
+            liquidDepth_DownComer = round(h3 + (hw * 10 ** -3) + h1, 4)
             if liquidDepth_DownComer > tray_spacing / 2:
-                context['check_tray_spacing'] = 'Warning: tray spacing is small or (liquid depth in Down Comer is up). arise it!'
-                context['liquidDepth_DownComer'] =liquidDepth_DownComer
+                context[
+                    'check_tray_spacing'] = 'Warning: tray spacing is small or (liquid depth in Down Comer is up). arise it!'
+                context['liquidDepth_DownComer'] = liquidDepth_DownComer
                 # show the range that he can select tray spacing
             else:
                 context['liquidDepth_DownComer'] = liquidDepth_DownComer
-
-
 
             # حد پایین سرعت گاز قابل قبول برای weeping
             # calc Vow as x
             Eq_Vow = Eq(
                 0.0229 * ((viscosity ** 2 * liquid_density) / (
-                            surface_tension * gc * Gas_density * Do * 0.001 * Gas_density))
+                        surface_tension * gc * Gas_density * Do * 0.001 * Gas_density))
                 ** 0.379
                 * division_L_to_do ** 0.293 *
                 ((2 * Aa * Do * 0.001) / (math.sqrt(3) * (P_prim * 0.001) ** 3))
@@ -372,24 +416,17 @@ def sieveTray_view(request, ):
             Vow = round(solve_Eq_Vow[0], 3)
             #  print(Vow)
             if Vo < Vow:
-                context['VoLessVow'] = 'Warning: your velocity through an orifice is lower than minimum gas velocity through ' \
-                                       'perforations below which excessive weeping occurs, select another value for ' \
-                                       'Gas Flowrate! '
+                context[
+                    'VoLessVow'] = 'Warning: your velocity through an orifice is lower than minimum gas velocity through ' \
+                                   'perforations below which excessive weeping occurs, select another value for ' \
+                                   'Gas Flowrate! '
             # محاسبه ماندگی
-            Horizontal_parameter = round((FlowRateLiquid / FlowRateVapor) * (Gas_density / liquid_density) ** 0.5, 3)
-            context['Euser'] = Euser
-            context['Horizontal_parameter'] = Horizontal_parameter
-            context['Times_vn_vf'] = Times_vn_vf
-            if Euser > 0.075:
-                context['Entrainment'] = 'Warning: Entrainment is remarkable!'
 
             # و بالاخره نمایش نتایج
             context['Do'] = Do
-
 
             return render(request, 'sieveTray/sieveTray.html', context)
     else:
         form = give_data_form()
     # return render(request, 'sieveTray.html', {'form': form})
     return render(request, 'sieveTray/sieveTray.html', {'form': form})
-

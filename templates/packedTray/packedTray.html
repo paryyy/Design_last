@@ -1,8 +1,79 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<br><br>
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    <br>گرفتن نوع بکینگی که استفاده میکنه <br>
+
+                    <br>براساس پایین و بالای برج رو متوجه نشدم که چطور وارد برنامه کنم.<br>
+                </div>
+            </div>
+
 
 <p>packed tray page</p>
+<form action="/Home/packedtray/" method="POST" >
+  {% csrf_token %}
+  <table class="table" style="width:50%"  >
 
+    <thead class="table-dark">
+<!--    ستون سیاه اصلی-->
 
+      <tr>
+        <th scope="col" >Title</th>
+        <th scope="col" >Amounts</th>
+      </tr>
+<!--    بدنه-->
+    </thead>
+    <tbody>
+        <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
+      <tr>
+        <th scope="row" >Percentage of substance in gas:</th>
+        <td>{{form.percent_first_sub_gas}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Mw of first substance of gas [gr/mol]:</th>
+        <td>{{form.Mw_first_sub_gas}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Mw of gas [gr/mol]:</th>
+        <td>{{form.Mw_gas}}</td>
+      </tr>
+
+      <tr>
+        <th scope="row" >type of packing:</th>
+        <td>{{form.type_packing}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >rate gas entering [m^3/s]:</th>
+        <td>{{form.rate_gas_entering}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Temperature of gas entering [C]:</th>
+        <td>{{form.Temp_gas_entering}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Pressure of gas entering [atm]:</th>
+        <td>{{form.Pressure_gas_entering}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >rate af substance in liquid [Kg/s]:</th>
+        <td>{{form.rate_sub_in_liq}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >density of substance in liquid [Kg/m^3]:</th>
+        <td>{{form.density_sub_in_liq}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >viscosity of substance in liquid [Kg/m.s]:</th>
+        <td>{{form.viscosity_sub_in_liq}}</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+    <input type="submit"  class="btn btn-success" value="check"  >
+</form>
+
+</div>
 {% endblock %}

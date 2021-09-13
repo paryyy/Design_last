@@ -2,14 +2,7 @@
 
 {% block content %}
 <!-- هشدار مقدار E از جدول بیدا کنه-->
-          {% if Euser == 0.075  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    We calculated the values needed to design your tower! <br><br> in the last step<br>read the value of E from (MASS-TRANSFER OPERATIONS(Terybal) - Figure 6.1 ) with the <br> <b>horizontal parameter={{Horizontal_parameter}}</b>   and    <b>V / Vf = {{Times_vn_vf}}</b>
-                    <br> then Change E to this table.
-                </div>
-            </div>
-          {% endif %}
+
 
 <!--     نمایش نتیجه -->
            {% if Do and delta_p and W and hw%}
@@ -23,6 +16,7 @@
                     <br><b>tray spacing= </b> {{tray_spacing}} [m]<br>
                     <br><b>Hole Diameter= </b> {{Do}} [mm]<br>
                     <br><b>Entrainment= </b> {{Euser}} [mm]<br>
+                    <br><b>Thickness of each Tray= </b> {{L}} [mm]<br>
                 </div>
              </div>
            {% endif %}
@@ -48,13 +42,7 @@
                 </div>
             </div>
           {% endif %}
-          {% if material_design  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    warning: for your material Design {{material_design}}.
-                </div>
-            </div>
-          {% endif %}
+
 
 
 
@@ -114,53 +102,37 @@
     <tbody>
         <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
       <tr>
-        <th scope="row" >Vapor Flow Rate(Kmol/s):</th>
+        <th scope="row" >Gas Flow Rate[m^3/s]:</th>
         <td>{{form.FlowRateVapor}}</td>
       </tr>
             <tr>
-        <th scope="row" >Liquid Flow Rate (Kmol/s):</th>
+        <th scope="row" >Liquid Flow Rate [m^3/s]:</th>
         <td>{{form.FlowRateLiquid}}</td>
       </tr>
-      <tr>
-        <th scope="row" >Temperature [C]:</th>
-        <td>{{form.Temperature}}</td>
 
-      </tr>
       <tr>
         <th scope="row" >Pressure [atm]:</th>
         <td>{{form.Pressure}}</td>
 
       </tr>
+
+
+
+
       <tr>
-        <th scope="row" >mole fraction in vapor:</th>
-        <td>{{form.Mfv}}</td>
-
+        <th scope="row" >Liquid density [Kg/m^3] :</th>
+        <td>{{form.liquid_density}}</td>
+      </tr>
+      <tr>
+        <th scope="row" >Gas density [Kg/m^3] :</th>
+        <td>{{form.Gas_density}}</td>
       </tr>
           <tr>
-        <th scope="row" >mass fraction in liquid:</th>
-        <td>{{form.Mfl}}</td>
-
-      </tr>
-          <tr>
-        <th scope="row" >viscosity of gas [Kg/m.s]:</th>
+        <th scope="row" >Gas viscosity [Kg/m.s]:</th>
         <td>{{form.viscosity}}</td>
 
       </tr>
-          <tr>
-        <th scope="row" >Molecular weight first substance [g/mol]:<br> (ماده ای قراراست تقطیر شود)</th>
-        <td>{{form.MolWt_1}}</td>
 
-      </tr>
-          <tr>
-        <th scope="row" >Molecular weight second substance [g/mol]:</th>
-        <td>{{form.MolWt_2}}</td>
-
-      </tr>
-          <tr>
-        <th scope="row" >liquid density [Kg/m^3] :</th>
-        <td>{{form.liquid_density}}</td>
-
-      </tr>
           <tr>
         <th scope="row" >Surface tension [N/m]:</th>
         <td>{{form.surface_tension}}</td>
@@ -173,11 +145,11 @@
         <td>{{form.TowerDiameter}}</td>
       </tr>
           <tr>
-        <th scope="row" >tray spacing [m]:</th>
+        <th scope="row" >tray spacing [m]:<br>range(0.5-0.9[m])</th>
         <td>{{form.tray_spacing}}</td>
       </tr>
           <tr>
-        <th scope="row" >W/T: (0.6, 0.65, 0.7, 0.75, 0.8):</th>
+        <th scope="row" >W/T <br>range(0.6-0.8)</th>
         <td>{{form.times_w_t}}</td>
       </tr>
                       <tr>
@@ -187,7 +159,7 @@
         </td>
       </tr>
           <tr>
-        <th scope="row" >Hole Diameter [mm]: <br>if you select Carbon steel, Hole Diameter must be more than 9 [mm]</th>
+        <th scope="row" >Hole Diameter [mm]: <br>range(3-18[mm])</th>
         <td>{{form.Do}}</td>
       </tr>
           <tr>
@@ -204,10 +176,7 @@
         <th scope="row" >hw [mm]:</th>
         <td>{{form.hw}}</td>
       </tr>
-              <tr>
-        <th scope="row" >E (enter 0.075 first time):</th>
-        <td>{{form.Euser}}</td>
-      </tr>
+
 
     </tbody>
   </table>
