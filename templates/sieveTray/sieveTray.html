@@ -15,18 +15,15 @@
                     <br><br><b>Tower Diameter= </b> {{Td}} [m]<br>
                     <br><b>tray spacing= </b> {{tray_spacing}} [m]<br>
                     <br><b>Hole Diameter= </b> {{Do}} [mm]<br>
-                    <br><b>Entrainment= </b> {{Euser}} [mm]<br>
-                    <br><b>Thickness of each Tray= </b> {{L}} [mm]<br>
+                    <br><b>Entrainment= </b> {{E}} [mm] {{warn}} <br>
+
+
                 </div>
              </div>
            {% endif %}
 
 
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    نشت گیر ناودان؟.
-                </div>
-            </div>
+
 <br>
 <h3  class="form-label">complete information</h3>
 
@@ -39,6 +36,21 @@
             <div>
                 <div class="alert alert-danger" role="alert">
                     This is a danger alert with Do = {{Do}}.
+                </div>
+            </div>
+          {% endif %}
+
+          {% if vntovf_warning %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{vntovf_warning}} Vn/Vf>0.8 <br> Vn/Vf= {{vntovf}} <br> increase Tower Diameter!
+                </div>
+            </div>
+          {% endif %}
+          {% if vntovf_under_pressure_warning %}
+            <div>
+                <div class="alert alert-danger" role="alert">
+                    {{vntovf_under_pressure_warning}}  <br> Vn/Vf= {{vntovf_under_pressure}} <br> increase Tower Diameter!
                 </div>
             </div>
           {% endif %}
@@ -70,10 +82,10 @@
           {% endif %}
 
 
-          {% if Entrainment  %}
+          {% if Entrainment %}
             <div>
                 <div class="alert alert-danger" role="alert">
-                    {{Entrainment}}
+                    Entrainment = E {{Entrainment}}
                 </div>
             </div>
           {% endif %}
@@ -166,10 +178,10 @@
         <th scope="row" >ratio of perforations to Hole Diameter(P'/Do):</th>
         <td>{{form.Times_dis_hol}}</td>
       </tr>
-          <tr>
-        <th scope="row" >ratio of velocity than the flooding speed(Vn/Vf):</th>
-        <td>{{form.Times_vn_vf}}</td>
-      </tr>
+<!--          <tr>-->
+<!--        <th scope="row" >ratio of velocity than the flooding speed(Vn/Vf):</th>-->
+<!--        <td>{{form.Times_vn_vf}}</td>-->
+<!--      </tr>-->
 
           </tr>
               <tr>

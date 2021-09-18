@@ -20,7 +20,7 @@ class give_data_form(forms.Form):
     Do = forms.DecimalField(label="Hole Diameter [mm] (4.5 [mm] is good for first Choice or 9[mm] for stainless "
                                   "steel)")
     Times_dis_hol = forms.DecimalField(label="Times_dis_hol")
-    Times_vn_vf = forms.DecimalField(label="Times_vn_vf")
+    #  Times_vn_vf = forms.DecimalField(label="Times_vn_vf")
     hw = forms.DecimalField(label="hw")
 
 
