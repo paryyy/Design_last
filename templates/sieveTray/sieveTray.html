@@ -15,7 +15,7 @@
                     <br><br><b>Tower Diameter= </b> {{Td}} [m]<br>
                     <br><b>tray spacing= </b> {{tray_spacing}} [m]<br>
                     <br><b>Hole Diameter= </b> {{Do}} [mm]<br>
-                    <br><b>Entrainment= </b> {{E}} [mm] {{warn}} <br>
+                    <br><b>Entrainment= </b> {{E}}  {{warn}} <br>
 
 
                 </div>
@@ -35,7 +35,7 @@
           {% if Do > 10 %}
             <div>
                 <div class="alert alert-danger" role="alert">
-                    This is a danger alert with Do = {{Do}}.
+                    Warning: Do>10! <br>Do = {{Do}}.
                 </div>
             </div>
           {% endif %}

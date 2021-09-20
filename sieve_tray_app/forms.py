@@ -27,18 +27,12 @@ class give_data_form(forms.Form):
 
 
 class give_data_packed_form(forms.Form):
-    percent_first_sub_gas = forms.DecimalField(label="percent_first_sub_gas")
-    Mw_first_sub_gas = forms.DecimalField(label="Mw_first_sub_gas")
-    Mw_gas = forms.DecimalField(label="Mw_gas")
-    Packing_CHOICES = (
-        ('ceramic_Intalox_saddles', '25[mm] ceramic Intalox saddles'),
-    )
-    type_packing = forms.ChoiceField(choices=Packing_CHOICES, widget=forms.RadioSelect)
-    rate_gas_entering = forms.DecimalField(label="rate_gas_entering")
-    Temp_gas_entering = forms.DecimalField(label="Temp_gas_entering")
-    Pressure_gas_entering = forms.DecimalField(label="Pressure_gas_entering")
-    rate_sub_in_liq = forms.DecimalField(label="rate_sub_in_liq")
-    density_sub_in_liq = forms.DecimalField(label="density_sub_in_liq")
+    Tower_Diam = forms.DecimalField(label="Tower_Diam")
+    Gas_Flowrate = forms.DecimalField(label="Gas_Flowrate")  # [Kg/s]
+    Gas_density = forms.DecimalField(label="Gas_density")  # [Kg/m^3]
+    Liq_Flowrate = forms.DecimalField(label="Liq_Flowrate")  # [Kg/s]
+    Liq_density = forms.DecimalField(label="Liq_density")
     viscosity_sub_in_liq = forms.DecimalField(label="viscosity_sub_in_liq")
+    Cf = forms.DecimalField(label="Cf")
 
 

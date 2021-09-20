@@ -27,34 +27,94 @@ def packedTray_view(request):
     if request.method == "POST":
         form = give_data_packed_form(request.POST)
         if form.is_valid():
+            context = {'form': form}
             # گرفتن مقدار ماده اول موجود در هوا به درصد
-            percent_first_sub_gas = float(form.cleaned_data['percent_first_sub_gas'])  # 7%
-            Mw_first_sub_gas = float(form.cleaned_data['Mw_first_sub_gas'])  # 64
-            Mw_gas = float(form.cleaned_data['Mw_gas'])  # 29
-            type_packing = form.cleaned_data['type_packing']
-            rate_gas_entering = float(form.cleaned_data['rate_gas_entering'])  # 0.8  [m^3/s]
-            Temp_gas_entering = float(form.cleaned_data['Temp_gas_entering'])  # 30 [C]
-            Pressure_gas_entering = float(form.cleaned_data['Pressure_gas_entering'])  # 0.986 [atm]
-            rate_sub_in_liq = float(form.cleaned_data['rate_sub_in_liq'])  # 3.8 [Kg/s]
-            density_sub_in_liq = float(form.cleaned_data['density_sub_in_liq'])  # 1235 [kg/m^3]
+            Tower_Diam = float(form.cleaned_data['Tower_Diam'])
+            Gas_Flowrate = float(form.cleaned_data['Gas_Flowrate'])
+            Liq_Flowrate = float(form.cleaned_data['Liq_Flowrate'])
+            Gas_density = float(form.cleaned_data['Gas_density'])   # 1.25[Kg/m^3]
+            Liq_density = float(form.cleaned_data['Liq_density'])  # 1235 [kg/m^3]
             viscosity_sub_in_liq = float(form.cleaned_data['viscosity_sub_in_liq'])  # 0.0025 [Kg/m.s]
             R = 8.314
-            Mw_avg_gas = ((percent_first_sub_gas / 100) * (Mw_first_sub_gas)) + (
-                        (1 - (percent_first_sub_gas / 100)) * (Mw_gas))  # 31.45
-            gas_mol_rate = round(((Pressure_gas_entering * rate_gas_entering) / (R * (Temp_gas_entering + 273)) * 100),
-                                 5)  # 0.0313 [Kmol/s]
-            gas_mass_rate = round(
-                ((Pressure_gas_entering * rate_gas_entering) / (R * (Temp_gas_entering + 273))) * Mw_avg_gas * 101,
-                1)  # 1 [Kg/s]
-            density_gas = round(gas_mass_rate / rate_gas_entering, 3)  # 1.25 [Kg/m^3]
-            liq_mass_rate = round(
-                rate_sub_in_liq + ((gas_mol_rate) * (percent_first_sub_gas / 100) * (Mw_first_sub_gas)),
-                4)  # 3.9403 [Kg/s]
-            Horizontal_parameter_Fig6_34 = round(
-                (liq_mass_rate / gas_mass_rate) * (density_gas / (density_sub_in_liq - density_gas)) ** 0.5, 3)  # 0.125
-            print(Horizontal_parameter_Fig6_34)
+            Cf = float(form.cleaned_data['Cf'])
+            Area = (math.pi*(Tower_Diam)**2)/4
+            G_prim = Gas_Flowrate/Area  # [Kg/m^2.s]
+            Horizontal_parameter_Fig6_34 = round((Liq_Flowrate / Gas_Flowrate) * (Gas_density / (Liq_density - Gas_density)) ** 0.5, 3)  # 0.125
+            Horizontal_parameter_Fig6_34 = np.log(Horizontal_parameter_Fig6_34)
+            Vertical_parameter_Fig6_34 = (G_prim*Cf * (viscosity_sub_in_liq**0.1))/(Gas_density*(Liq_density-Gas_density))
+            Vertical_parameter_Fig6_34 = np.log(Vertical_parameter_Fig6_34)
+            print(Horizontal_parameter_Fig6_34,Vertical_parameter_Fig6_34)
 
-            context = {'form': form}
+            def DeltaP():
+                from sympy.abc import x
+
+                Table_list = [
+                    [50, Eq((-0.0721 * (Horizontal_parameter_Fig6_34 ** 2)) - (
+                                0.6359 * Horizontal_parameter_Fig6_34) - 5.6494, x)],
+                    [100, Eq((-0.0945 * Horizontal_parameter_Fig6_34 ** 2) - (
+                                0.7361 * Horizontal_parameter_Fig6_34) - 4.9607, x)],
+                    [200, Eq((-0.1024 * Horizontal_parameter_Fig6_34 ** 2) - (
+                                0.8044 * Horizontal_parameter_Fig6_34) - 4.4764, x)],
+                    [400, Eq((-0.1027 * Horizontal_parameter_Fig6_34 ** 2) - (
+                                0.8363 * Horizontal_parameter_Fig6_34) - 4.0548, x)],
+                    [800, Eq((-0.1194 * Horizontal_parameter_Fig6_34 ** 2) - (
+                                0.9476 * Horizontal_parameter_Fig6_34) - 3.7313, x)],
+                    [1200,
+                     Eq((-0.128 * Horizontal_parameter_Fig6_34 ** 2) - (0.9886 * Horizontal_parameter_Fig6_34) - 3.5525,
+                        x)]]
+                # for i in range(10):
+
+                Verticalup = solve(Table_list[5][1])
+                Verticalup = Verticalup[0]
+                Verticalup = math.exp(Verticalup)
+                Verticaldown = solve(Table_list[0][1])
+                Verticaldown = Verticaldown[0]
+                Verticaldown = math.exp(Verticaldown)
+
+                if math.exp(Vertical_parameter_Fig6_34) > Verticalup:
+                    context['Approximate_flooding'] = 'Approximate flooding'
+                elif math.exp(Vertical_parameter_Fig6_34) < Verticaldown:
+                    context['Pressure_Drop'] = 'Gas Pressure Drop is under 50 [pa]'
+
+                for i in range(5):
+                    Vertical_list1 = solve(Table_list[i][1])
+                    Vertical_list2 = solve(Table_list[i + 1][1])
+                    Vertical_list1 = Vertical_list1[0]
+                    Vertical_list2 = Vertical_list2[0]
+                    if Vertical_list1 <= Vertical_parameter_Fig6_34 <= Vertical_list2:
+                        x0 = math.exp(Vertical_list1)
+                        x1 = math.exp(Vertical_list2)
+                        y0 = Table_list[i][0]
+                        y1 = Table_list[i + 1][0]
+                        x = math.exp(Vertical_parameter_Fig6_34)
+                        Delta_P = round((((y0) * (x1 - x)) + ((y1) * (x - x0))) / (x1 - x0), 3)
+                        return Delta_P
+                        # print(Delta_P)
+
+            Delta_P = DeltaP()
+            if Delta_P !=None:
+                if Delta_P > 400:
+                    context['Pup400'] = 'Gas Pressure Drop> 400 [pa]'
+                elif Delta_P<400:
+                    context['Pdown400'] = 'Gas Pressure Drop < 400 [pa]'
+            context['Delta_P'] = Delta_P
+
+
+            # Eq_400 = Eq((-0.1209*(Horizontal_parameter_Fig6_34)**2)-(0.8847*Horizontal_parameter_Fig6_34)-4.0688,x)
+
+            def _round_diameter(td):
+                td = round(td, 2)
+                t_tuple = math.modf(td)
+                t_dec = t_tuple[0] * 100
+                t_dec = round(t_dec)
+                while t_dec % 5 != 0:
+                    t_dec += 1
+                td = t_tuple[1] + (t_dec / 100)
+                return td
+
+
+
+
             return render(request, 'packedTray/packedTray.html', context)
     else:
         form = give_data_packed_form()
@@ -349,7 +409,7 @@ def sieveTray_view(request, ):
                            liquid_density / (vo ** 2 * Gas_density))
                 solve_hd = solve(eq_hd)
                 hd = round(solve_hd[0], 4)  # [متر مایع روی سینی]
-                # print('hD= ', hD)
+                # print('hD= ', hd)
 
                 # {{  calc hL   # افت اصطکاکی جریان گاز به خاطر مایع روی سینی  }}
                 # calc Z
