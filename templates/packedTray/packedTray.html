@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+<h3>Packed Tray</h3> <br> <br> <br>
 
 <!--     نمایش نتیجه -->
            {% if Delta_P%}
@@ -43,7 +43,7 @@
             </div>
           {% endif %}
 
-<p>packed tray page</p>
+
 <form action="/Home/packedtray/" method="POST" >
   {% csrf_token %}
   <table class="table" style="width:50%"  >

@@ -1,212 +1,232 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<h3  class="form-label">Sieve Tray</h3>
 <!-- هشدار مقدار E از جدول بیدا کنه-->
+<div  style="width: 600px">
 
 
-<!--     نمایش نتیجه -->
-           {% if Do and delta_p and W and hw%}
-             <div>
-                <div class="alert alert-success" role="alert">
-                    result: <br><b>Gas Pressure Drop on each Tray=</b> {{delta_p}} [pa]<br>
-                    <br> <b>liquid Depth in Down Comer=</b> {{liquidDepth_DownComer}} [m]<br>
-                    <br><b>Weir length(W)= </b>{{W}} [m]<br>
-                    <br><b>Weir Height (hw) = </b>{{hw}}  [mm]
-                    <br><br><b>Tower Diameter= </b> {{Td}} [m]<br>
-                    <br><b>tray spacing= </b> {{tray_spacing}} [m]<br>
-                    <br><b>Hole Diameter= </b> {{Do}} [mm]<br>
-                    <br><b>Entrainment= </b> {{E}}  {{warn}} <br>
+    <!--     نمایش نتیجه -->
+               {% if Do and delta_p and W and hw%}
+                 <div>
+                    <div class="alert alert-success" role="alert">
+                        result: <br><b>Gas Pressure Drop on each Tray=</b> {{delta_p}} [pa]<br>
+                        <br> <b>Liquid Depth in Down Comer=</b> {{liquidDepth_DownComer}} [m]<br>
+                        <br><b>Weir length(W)= </b>{{W}} [m]<br>
+                        <br><b>Weir Height (hw) = </b>{{hw}}  [mm]
+                        <br><br><b>Tower Diameter= </b> {{Td}} [m]<br>
+                        <br><b>tray spacing= </b> {{tray_spacing}} [m]<br>
+                        <br><b>Hole Diameter= </b> {{Do}} [mm]<br>
+                        <br><b>Entrainment= </b> {{E}}  {{warn}} <br>
+                        <br><b>Tray Thickness= </b> {{L}}  [mm] <br>
+
+                    </div>
+                 </div>
+               {% endif %}
 
 
+
+    <br>
+ <div>
+
+
+     <div >
+
+    <!--     هشدار ها -->
+              {% if Do > 10 %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        Warning: Do>10 [mm]! <br>Do = {{Do}}.
+                    </div>
                 </div>
-             </div>
-           {% endif %}
+              {% endif %}
 
-
-
-<br>
-<h3  class="form-label">complete information</h3>
-
-
-
- <div >
-
-<!--     هشدار ها -->
-          {% if Do > 10 %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    Warning: Do>10! <br>Do = {{Do}}.
+              {% if vntovf_warning %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{vntovf_warning}} Vn/Vf>0.8 <br> Vn/Vf= {{vntovf}} <br> It is better to increase the Tower Diameter!
+                    </div>
                 </div>
-            </div>
-          {% endif %}
-
-          {% if vntovf_warning %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    {{vntovf_warning}} Vn/Vf>0.8 <br> Vn/Vf= {{vntovf}} <br> increase Tower Diameter!
+              {% endif %}
+              {% if vntovf_under_pressure_warning %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{vntovf_under_pressure_warning}}  <br> Vn/Vf= {{vntovf_under_pressure}} <br> It is better to increase the Tower Diameter!
+                    </div>
                 </div>
-            </div>
-          {% endif %}
-          {% if vntovf_under_pressure_warning %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    {{vntovf_under_pressure_warning}}  <br> Vn/Vf= {{vntovf_under_pressure}} <br> increase Tower Diameter!
+              {% endif %}
+
+                {% if qtoTd_War %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{qtoTd_War}}  <br> Liquid FlowRate/Tower Diameter= {{qtoTd}} [m^3/m diam] <br> It is better to increase the Tower Diameter or decrease Liquid FlowRate!
+                    </div>
                 </div>
-            </div>
-          {% endif %}
+              {% endif %}
 
-
-
-
-          {% if calc_h_delta_p  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    {{ calc_h_delta_p }}.
+                     {% if qtow %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{qtowWar}}  <br> Liquid FlowRate/Weir length= {{qtow}} [m^3/m Weir length] <br> It is better to increase the Tower Diameter or decrease Liquid FlowRate!
+                    </div>
                 </div>
-            </div>
-          {% endif %}
+              {% endif %}
 
-          {% if check_tray_spacing  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    {{ check_tray_spacing }}.
+
+
+
+              {% if calc_h_delta_p  %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{ calc_h_delta_p }}.
+                    </div>
                 </div>
-            </div>
-          {% endif %}
-          {% if check_tray_spacing  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    {{ check_tray_spacing }}.
+              {% endif %}
+
+              {% if check_tray_spacing  %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        {{ check_tray_spacing }}.
+                    </div>
                 </div>
-            </div>
-          {% endif %}
+              {% endif %}
 
 
-          {% if Entrainment %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    Entrainment = E {{Entrainment}}
+
+              {% if Entrainment %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                        Entrainment = E {{Entrainment}}
+                    </div>
                 </div>
-            </div>
-          {% endif %}
+              {% endif %}
 
-               {% if VoLessVow  %}
-            <div>
-                <div class="alert alert-danger" role="alert">
-                    warning: {{VoLessVow}}.
+                   {% if VoLessVow  %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                         {{VoLessVow}}
+
+                    </div>
                 </div>
-            </div>
-          {% endif %}
+              {% endif %}
+                   {% if re  %}
+                <div>
+                    <div class="alert alert-danger" role="alert">
+                         {{re_alert}}
 
-<!--     اتمام هشدار ها-->
-<form action="/Home/sieveTray/" method="POST" >
-  {% csrf_token %}
-  <table class="table" style="width:50%"  >
-    <thead class="table-dark">
-<!--    ستون سیاه اصلی-->
+                    </div>
+                </div>
+              {% endif %}
+    <!--     اتمام هشدار ها-->
 
-      <tr>
-        <th scope="col" >Title</th>
-        <th scope="col" >Amounts</th>
-      </tr>
-<!--    بدنه-->
-    </thead>
-    <tbody>
-        <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
-      <tr>
-        <th scope="row" >Gas Flow Rate[m^3/s]:</th>
-        <td>{{form.FlowRateVapor}}</td>
-      </tr>
-            <tr>
-        <th scope="row" >Liquid Flow Rate [m^3/s]:</th>
-        <td>{{form.FlowRateLiquid}}</td>
-      </tr>
-
-      <tr>
-        <th scope="row" >Pressure [atm]:</th>
-        <td>{{form.Pressure}}</td>
-
-      </tr>
-
-
-
-
-      <tr>
-        <th scope="row" >Liquid density [Kg/m^3] :</th>
-        <td>{{form.liquid_density}}</td>
-      </tr>
-      <tr>
-        <th scope="row" >Gas density [Kg/m^3] :</th>
-        <td>{{form.Gas_density}}</td>
-      </tr>
-          <tr>
-        <th scope="row" >Gas viscosity [Kg/m.s]:</th>
-        <td>{{form.viscosity}}</td>
-
-      </tr>
+    <form action="/Home/sieveTray/" method="POST" >
+      {% csrf_token %}
+        <h4  class="form-label">complete information</h4>
+      <table class="table" style="width:90%"  >
+        <thead class="table-dark">
+    <!--    ستون سیاه اصلی-->
 
           <tr>
-        <th scope="row" >Surface tension [N/m]:</th>
-        <td>{{form.surface_tension}}</td>
+            <th scope="col" >Title</th>
+            <th scope="col" >Amounts</th>
+          </tr>
+    <!--    بدنه-->
+        </thead>
+        <tbody>
+            <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
+          <tr>
+            <th scope="row" >Gas Flow Rate[m^3/s]:</th>
+            <td>{{form.FlowRateVapor}}</td>
+          </tr>
+                <tr>
+            <th scope="row" >Liquid Flow Rate [m^3/s]:</th>
+            <td>{{form.FlowRateLiquid}}</td>
+          </tr>
 
-      </tr>
-             <tr><h1 ><th scope="row"  >2:Tower information</th></h1></tr>
-      <br><br>
-      <tr>
-        <th scope="row" >TowerDiameter [m]:</th>
-        <td>{{form.TowerDiameter}}</td>
-      </tr>
           <tr>
-        <th scope="row" >tray spacing [m]:<br>range(0.5-0.9[m])</th>
-        <td>{{form.tray_spacing}}</td>
-      </tr>
-          <tr>
-        <th scope="row" >W/T <br>range(0.6-0.8)</th>
-        <td>{{form.times_w_t}}</td>
-      </tr>
-                      <tr>
-        <th scope="row" >material design:</th>
-        <td >
-            {{form.material_design}}
-        </td>
-      </tr>
-          <tr>
-        <th scope="row" >Hole Diameter [mm]: <br>range(3-18[mm])</th>
-        <td>{{form.Do}}</td>
-      </tr>
-          <tr>
-        <th scope="row" >ratio of perforations to Hole Diameter(P'/Do):</th>
-        <td>{{form.Times_dis_hol}}</td>
-      </tr>
-<!--          <tr>-->
-<!--        <th scope="row" >ratio of velocity than the flooding speed(Vn/Vf):</th>-->
-<!--        <td>{{form.Times_vn_vf}}</td>-->
-<!--      </tr>-->
+            <th scope="row" >Pressure [atm]:</th>
+            <td>{{form.Pressure}}</td>
 
           </tr>
+
+
+
+
+          <tr>
+            <th scope="row" >Liquid density [Kg/m^3] :</th>
+            <td>{{form.liquid_density}}</td>
+          </tr>
+          <tr>
+            <th scope="row" >Gas density [Kg/m^3] :</th>
+            <td>{{form.Gas_density}}</td>
+          </tr>
+          <tr>
+            <th scope="row" >Gas viscosity [Kg/m.s]:</th>
+            <td>{{form.viscosity}}</td>
+          </tr>
+
               <tr>
-        <th scope="row" >hw [mm]:</th>
-        <td>{{form.hw}}</td>
-      </tr>
+            <th scope="row" >Surface tension [N/m]:</th>
+            <td>{{form.surface_tension}}</td>
+
+          </tr>
+                 <tr><h1 ><th scope="row"  >2:Tower information</th></h1></tr>
+          <br><br>
+          <tr>
+            <th scope="row" >TowerDiameter [m]:</th>
+            <td>{{form.TowerDiameter}}</td>
+          </tr>
+              <tr>
+            <th scope="row" >tray spacing [m]:<br>range(0.5-0.9[m])</th>
+            <td>{{form.tray_spacing}}</td>
+          </tr>
+              <tr>
+            <th scope="row" >W/T <br>range(0.6-0.8)</th>
+            <td>{{form.times_w_t}}</td>
+          </tr>
+                          <tr>
+            <th scope="row" >material design:</th>
+            <td >
+                {{form.material_design}}
+            </td>
+          </tr>
+              <tr>
+            <th scope="row" >Hole Diameter [mm]: <br>range(3-18[mm])</th>
+            <td>{{form.Do}}</td>
+          </tr>
+              <tr>
+            <th scope="row" >ratio of perforations to Hole Diameter(P'/Do):</th>
+            <td>{{form.Times_dis_hol}}</td>
+          </tr>
+    <!--          <tr>-->
+    <!--        <th scope="row" >ratio of velocity than the flooding speed(Vn/Vf):</th>-->
+    <!--        <td>{{form.Times_vn_vf}}</td>-->
+    <!--      </tr>-->
+
+              </tr>
+                  <tr>
+            <th scope="row" >hw [mm]:</th>
+            <td>{{form.hw}}</td>
+          </tr>
+            {% if re %}
+                <th scope="row" >f :</th> <td><input type="text" name="f" ></td>
+            {% endif %} <br> <br>
+
+        </tbody>
+      </table>
+
+        <input type="submit"  class="btn btn-success" value="check"  >
+    </form>
+
+    </div>
+ </div>
 
 
-    </tbody>
-  </table>
 
-    <input type="submit"  class="btn btn-success" value="check"  >
-</form>
+
+
+
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
 
 {% endblock %}
