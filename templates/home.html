@@ -3,7 +3,7 @@
 {% block content %}
 
 <!--خوش آمدگویی-->
-<h1 class="display-4">Design Tower</h1> <br> <br>
+<h1 class="display-4">Design of the Tower Trays</h1> <br> <br>
 
 
     <!--انتخاب متد و نوع برج-->
@@ -11,15 +11,15 @@
     <form class="row g-3" action="\Home\"   method="POST">
       {% csrf_token %}
       <div >
-        <label for="inputState" class="form-label">select your method</label>
+        <label for="inputState" class="form-label">Select method</label>
         <select id="inputState" class="form-select"  name="method">
           <option selected>Choose...</option>
-          <option>Trybal</option>
+          <option>Treybal</option>
         </select>
           <br> <br>
       </div>
       <div>
-          <label for="inputState" class="form-label">Select the type of tower</label>
+          <label for="inputState" class="form-label">Select type of tower</label>
           <select id="inputState" class="form-select" name="types_tower">
             <option selected>Choose...</option>
             <option>Sieve Tray</option>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <h3>Packed Tray</h3> <br> <br> <br>
-
+<h4  class="form-label">Complete the following information</h4> <br><br>
 <!--     نمایش نتیجه -->
            {% if Delta_P%}
              <div>
@@ -46,7 +46,7 @@
 
 <form action="/Home/packedtray/" method="POST" >
   {% csrf_token %}
-  <table class="table" style="width:50%"  >
+  <table class="table" style="width:40%"  >
 
     <thead class="table-dark">
 <!--    ستون سیاه اصلی-->

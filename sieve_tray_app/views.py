@@ -15,9 +15,9 @@ from django.http import HttpResponse
 def Home_page_view(request):
     if request.method == 'POST':
         data = request.POST
-        if data['method'] == 'Trybal' and data['types_tower'] == 'Sieve Tray':
+        if data['method'] == 'Treybal' and data['types_tower'] == 'Sieve Tray':
             return redirect('/Home/sieveTray/')
-        elif data['method'] == 'Trybal' and data['types_tower'] == 'Packed Tray':
+        elif data['method'] == 'Treybal' and data['types_tower'] == 'Packed Tray':
             # return render(request, 'packedTray.html',{data['method']:'trybal', data['types_tower']: 'packed tray' })
             return redirect('/Home/packedtray/')
     return render(request, 'Home.html')
@@ -39,11 +39,11 @@ def packedTray_view(request):
             G_prim = Gas_Flowrate / Area  # [Kg/m^2.s]
             Horizontal_parameter_Fig6_34 = round(
                 (Liq_Flowrate / Gas_Flowrate) * (Gas_density / (Liq_density - Gas_density)) ** 0.5, 4)  # 0.125
-            #  print('H:',Horizontal_parameter_Fig6_34)
+            print('H:',Horizontal_parameter_Fig6_34)
             Horizontal_parameter_Fig6_34 = np.log(Horizontal_parameter_Fig6_34)
             Vertical_parameter_Fig6_34 = (G_prim ** 2 * Cf * (viscosity_sub_in_liq ** 0.1)) / (
                     Gas_density * (Liq_density - Gas_density))
-            #  print( 'V: ',Vertical_parameter_Fig6_34)
+            print( 'V: ',Vertical_parameter_Fig6_34)
             Vertical_parameter_Fig6_34 = np.log(Vertical_parameter_Fig6_34)
 
 
@@ -69,9 +69,11 @@ def packedTray_view(request):
                 Verticalup = solve(Table_list[5][1])
                 Verticalup = Verticalup[0]
                 Verticalup = math.exp(Verticalup)
+                print('Verticalup= ', Verticalup)
                 Verticaldown = solve(Table_list[0][1])
                 Verticaldown = Verticaldown[0]
                 Verticaldown = math.exp(Verticaldown)
+                print('Verticaldown= ',Verticaldown)
 
                 if math.exp(Vertical_parameter_Fig6_34) > Verticalup:
                     context['Approximate_flooding'] = 'Approximate flooding'
@@ -208,9 +210,10 @@ def sieveTray_view(request, ):
                     beta = beta * ((5 * division_AoToAa) + 0.5)
                 #  Calc CF
                 cf = (alfa * (math.log((1 / division_for_cf), 10)) + beta) * (surface_tension / 0.020) ** 0.2
-                # print('CF= ', CF)
+                # print('CF= ', cf)
                 # {{ Calc VF }}
                 vf = cf * ((liquid_density - Gas_density) / Gas_density) ** 0.5
+
                 return vf
 
             def _w_to_area_used_by_one_downspout_():
@@ -255,6 +258,8 @@ def sieveTray_view(request, ):
                 at, ad = _calc_areas_(TowerDiameter)[0], _calc_areas_(TowerDiameter)[1]
                 an = at - ad
                 vn = Volumetric_flow_rate_G / an
+                #  print(vn)
+                #  print(an)
                 vntovf = round(vn / vf, 4)
                 td = TowerDiameter
                 aa = _calc_areas_(td)[2]
@@ -292,6 +297,7 @@ def sieveTray_view(request, ):
                 Td = _calc_atmospheric_()[0]
                 Ad = _calc_atmospheric_()[1]
                 Aa = _calc_atmospheric_()[2]
+                print('Aa=', Aa)
                 W = _calc_atmospheric_()[3]
                 An = _calc_atmospheric_()[4]
                 VntoVf = _calc_atmospheric_()[5]
@@ -378,14 +384,14 @@ def sieveTray_view(request, ):
                 # print(z)
                 # calc Va
                 va = round(Volumetric_flow_rate_G / Aa, 4)  # [m/s]
-                # print(Va)
+                print('va = ',va)
                 # calc hL as x
-                eq_hl = Eq((6.1 * 10 ** (-3)) + (0.725 * hw * 10 ** -3) - (
-                        0.238 * hw * 10 ** -3 * va * (Gas_density ** 0.5)) + (
+                eq_hl = Eq((6.1 * 10 ** (-3)) + (0.725 * (hw * 10 ** -3)) - (
+                        0.238 * (hw * 10 ** -3) * va * (Gas_density ** 0.5)) + (
                                    1.225 * Volumetric_flow_rate_L / z), x)
                 solve_hl = solve(eq_hl)
                 hl = round(solve_hl[0], 4)  # [m]
-
+                print('hl= ',hl)
                 # {{ hR افت فشار اضافی ناشی از کشش سطحی }}
                 # calc hR
                 hr = round(6 * surface_tension * gc / (liquid_density * Do * 10 ** -3 * g), 4)  # [m]
@@ -460,8 +466,10 @@ def sieveTray_view(request, ):
             Horizontal_parameter = round(
                 ((Volumetric_flow_rate_L * liquid_density) / (Volumetric_flow_rate_G * Gas_density)) * (
                         Gas_density / liquid_density) ** 0.5, 5)
+            print(Horizontal_parameter)
+            print(VntoVf)
             Horizontal_parameter = np.log(Horizontal_parameter)
-            if True:  # VntoVf < 0.8:
+            if True:
                 def Entrainment():
                     from sympy.abc import x
                     VntoVf_list = [[0.3, Eq(-0.3707 * Horizontal_parameter - 7.2003, x)],

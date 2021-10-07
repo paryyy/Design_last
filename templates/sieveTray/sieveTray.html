@@ -10,7 +10,7 @@
                {% if Do and delta_p and W and hw%}
                  <div>
                     <div class="alert alert-success" role="alert">
-                        result: <br><b>Gas Pressure Drop on each Tray=</b> {{delta_p}} [pa]<br>
+                        result: <br><b>Gas Pressure Drop on each Tray=</b> {{delta_p}} [Pa]<br>
                         <br> <b>Liquid Depth in Down Comer=</b> {{liquidDepth_DownComer}} [m]<br>
                         <br><b>Weir length(W)= </b>{{W}} [m]<br>
                         <br><b>Weir Height (hw) = </b>{{hw}}  [mm]
@@ -25,8 +25,7 @@
                {% endif %}
 
 
-
-    <br>
+    <br> <br>
  <div>
 
 
@@ -121,7 +120,7 @@
 
     <form action="/Home/sieveTray/" method="POST" >
       {% csrf_token %}
-        <h4  class="form-label">complete information</h4>
+        <h4  class="form-label">Complete the following information</h4>
       <table class="table" style="width:90%"  >
         <thead class="table-dark">
     <!--    ستون سیاه اصلی-->
@@ -133,7 +132,7 @@
     <!--    بدنه-->
         </thead>
         <tbody>
-            <tr><h1><th scope="row"  >1:Basic information</th></h1></tr>
+            <tr><h1><th scope="row"  >1:Basic information</th></h1>
           <tr>
             <th scope="row" >Gas Flow Rate[m^3/s]:</th>
             <td>{{form.FlowRateVapor}}</td>
@@ -161,7 +160,7 @@
             <td>{{form.Gas_density}}</td>
           </tr>
           <tr>
-            <th scope="row" >Gas viscosity [Kg/m.s]:</th>
+            <th scope="row" > Viscosity [Kg/m.s]:</th>
             <td>{{form.viscosity}}</td>
           </tr>
 
@@ -171,13 +170,13 @@
 
           </tr>
                  <tr><h1 ><th scope="row"  >2:Tower information</th></h1></tr>
-          <br><br>
+
           <tr>
-            <th scope="row" >TowerDiameter [m]:</th>
+            <th scope="row" >Tower Diameter [m]:</th>
             <td>{{form.TowerDiameter}}</td>
           </tr>
               <tr>
-            <th scope="row" >tray spacing [m]:<br>range(0.5-0.9[m])</th>
+            <th scope="row" >Tray spacing [m]:<br>range(0.5-0.9[m])</th>
             <td>{{form.tray_spacing}}</td>
           </tr>
               <tr>
@@ -185,7 +184,7 @@
             <td>{{form.times_w_t}}</td>
           </tr>
                           <tr>
-            <th scope="row" >material design:</th>
+            <th scope="row" >Material design:</th>
             <td >
                 {{form.material_design}}
             </td>
@@ -195,7 +194,7 @@
             <td>{{form.Do}}</td>
           </tr>
               <tr>
-            <th scope="row" >ratio of perforations to Hole Diameter(P'/Do):</th>
+            <th scope="row" >Ratio of perforations to Hole Diameter(P'/Do):</th>
             <td>{{form.Times_dis_hol}}</td>
           </tr>
     <!--          <tr>-->
@@ -215,7 +214,7 @@
         </tbody>
       </table>
 
-        <input type="submit"  class="btn btn-success" value="check"  >
+        <input type="submit"  class="btn btn-success" value="check"  > <br> <br>
     </form>
 
     </div>
